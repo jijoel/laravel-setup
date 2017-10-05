@@ -111,3 +111,22 @@ composer require --dev laravel/dusk
 git add .
 git commit -m 'include standard composer packages'
 
+
+# Redirect to https (generally just for deployment)
+sed -i '/Handle Front Controller/i \
+    # Redirect to https \
+    RewriteCond %{HTTPS} !=on \
+    RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [R,L] \
+' public/.htaccess
+
+touch README.md
+touch public/humans.txt
+
+echo 'Release 0.0.1;  Updated:' `date +"%-m/%-d/%Y"` > version.txt
+
+cp version.txt CHANGELOG.md
+printf '=%.0s' {1..30} >> CHANGELOG.md
+echo 'Initial project setup' >> CHANGELOG.md
+
+git add .
+git commit -m 'set up readme, changelog, and other doc files'
