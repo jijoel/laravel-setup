@@ -1,0 +1,113 @@
+#!/bin/bash
+
+# Get the path of the executable:
+cd $(dirname $0)
+MY_PATH=`pwd`
+cd ~-
+
+# Create a new project from scratch, if given a name
+if [ $1 ]; then
+    echo 'Creating new project ' $1
+    laravel new $1
+    cd $1
+fi
+
+echo $MY_PATH
+
+echo `php artisan env` | grep -q local
+if [ $? -ne "0" ]; then
+    echo 'Error: You are not running in a Laravel local environment.'
+    echo ''
+    echo 'This script is not supported for environments other than local.'
+    exit 1
+fi
+
+# Remove compiled files from version control
+rm -rf public/css
+rm -rf public/js
+
+mkdir storage/app/public/css
+mkdir storage/app/public/js
+mkdir storage/app/public/fonts
+mkdir storage/app/public/images
+
+cd public
+ln -s ../storage/app/public storage
+ln -s storage/css css
+ln -s storage/js js
+ln -s storage/fonts fonts
+ln -s storage/images images
+
+cd ..
+
+# Set up version control
+cp $MY_PATH/files/.gitignore .
+
+git init
+git add .
+git commit -m 'Initial commit'
+
+# Set up environment files
+if [ ! -f .env ]; then
+    # Create the .env file
+    cp .env.example .env
+fi
+
+# Generate a new key for the project
+php artisan key:generate
+
+# Include deployment information
+sed -i '/APP_URL/a \
+\
+DEPLOY_HOST=user@domain\
+DEPLOY_PATH=\/home\/user\/path' .env
+
+sed -i '/APP_URL/a \
+\
+DEPLOY_HOST=user@domain\
+DEPLOY_PATH=\/home\/user\/path' .env.example
+
+# Include stripe keys
+echo '
+STRIPE_KEY=
+STRIPE_SECRET=
+' >> .env.example
+
+echo '
+STRIPE_KEY=
+STRIPE_SECRET=
+' >> .env
+
+git add .
+git commit -m 'setup environment files'
+
+# Include utility scripts
+cp -r $MY_PATH/bin .
+git add .
+git commit -m 'include utility scripts'
+
+
+# Set up resource dependencies
+sed -i '/scripts/a \        "detail": "cross-env ARG=detail NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",' package.json
+sed -i '/bootstrap-sass/d' package.json
+sed -i '/jquery/d' package.json
+sed -i '/lodash/d' package.json
+
+yarn add --dev babel-plugin-transform-imports babel-preset-env babel-preset-stage-2 moment stylus stylus-loader vuetify vuex webpack-bundle-analyzer
+cp $MY_PATH/files/webpack.mix.js .
+cp $MY_PATH/files/.babelrc .
+
+rm -rf resources/assets/sass
+cp -r $MY_PATH/resources/assets ./resources
+
+git add .
+git commit -m 'include javascript and stylus dependencies'
+
+
+# Load additional composer packages
+composer require laracasts/utilities waavi/sanitizer
+composer require --dev laravel/dusk
+
+git add .
+git commit -m 'include standard composer packages'
+
