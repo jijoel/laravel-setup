@@ -8,10 +8,11 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
-import Vuetify from 'vuetify';
-import Vuex from 'vuex';
 
+import Vuetify from 'vuetify';
 Vue.use(Vuetify);
+
+import Vuex from 'vuex';
 Vue.use(Vuex);
 
 /**
@@ -20,7 +21,7 @@ Vue.use(Vuex);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example', require('./components/Example.vue'));
+Vue.component('example-component', require('./components/ExampleComponent.vue'));
 
 const app = new Vue({
     el: '#app'
