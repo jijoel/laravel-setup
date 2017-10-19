@@ -23,22 +23,8 @@ if [ $? -ne "0" ]; then
 fi
 
 # Remove compiled files from version control
-rm -rf public/css
-rm -rf public/js
-
-mkdir storage/app/public/css
-mkdir storage/app/public/js
-mkdir storage/app/public/fonts
-mkdir storage/app/public/images
-
-cd public
-ln -s ../storage/app/public storage
-ln -s storage/css css
-ln -s storage/js js
-ln -s storage/fonts fonts
-ln -s storage/images images
-
-cd ..
+rm -rf public/css/*
+rm -rf public/js/*
 
 # Set up version control
 cp $MY_PATH/files/.gitignore .
@@ -46,6 +32,14 @@ cp $MY_PATH/files/.gitignore .
 git init
 git add .
 git commit -m 'Initial commit'
+
+
+# Include utility scripts
+cp -r $MY_PATH/bin .
+
+# Set up the directory structure for compiled files
+bin/setup
+
 
 # Set up environment files
 if [ ! -f .env ]; then
@@ -77,10 +71,6 @@ echo '
 STRIPE_KEY=
 STRIPE_SECRET=
 ' >> .env
-
-
-# Include utility scripts
-cp -r $MY_PATH/bin .
 
 
 # Set up resource dependencies
@@ -127,6 +117,20 @@ sed -i '/Handle Front Controller/i \
     RewriteCond %{HTTPS} !=on \
     RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [R,L] \
 ' public/.htaccess
+
+# Create a "memory" database connection
+sed -i "0,/'sqlite'/s/sqlite/memory' => \[ \n \
+            'driver' => 'sqlite', \n \
+            'database' => ':memory:', \n \
+        ], \n \
+\n        '&/" config/database.php
+
+# Use the "memory" database connection in phpunit
+sed -i '/QUEUE_DRIVER/a \
+        <env name="DB_CONNECTION" value="memory"/>' \
+phpunit.xml
+
+# Create documentation
 
 touch README.md
 touch public/humans.txt
