@@ -34,5 +34,10 @@ mix.webpackConfig({
 });
 
 mix.js('resources/assets/js/app.js', 'public/js')
-   .stylus('resources/assets/stylus/app.styl', 'public/css')
-   .version();
+   .stylus('resources/assets/stylus/app.styl', 'public/css');
+
+// `npm run hot` will fail if we use mix.version(),
+// and we really only need it for production
+if (process.env.NODE_ENV == 'production') {
+    mix.version();
+}
