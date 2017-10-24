@@ -30,14 +30,31 @@ if (process.env.ARG == 'detail') {
 }
 
 mix.webpackConfig({
-    plugins: plugins
-});
+    plugins: plugins,
+    resolve: { symlinks: false },
+})
+mix.options({
+    extractVueStyles: true,
+})
+
+if (mix.inProduction()) {
+    mix.version();
+    mix.webpackConfig({
+        plugins: plugins,
+        module: {
+            rules: [{
+                test: /\.js?$/,
+                exclude: /(bower_components)/,
+                use: [{
+                    loader: 'babel-loader',
+                    options: mix.config.babel()
+                }]
+            }]
+        }
+    });
+}
+
 
 mix.js('resources/assets/js/app.js', 'public/js')
    .stylus('resources/assets/stylus/app.styl', 'public/css');
 
-// `npm run hot` will fail if we use mix.version(),
-// and we really only need it for production
-if (process.env.NODE_ENV == 'production') {
-    mix.version();
-}
