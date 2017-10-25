@@ -85,7 +85,7 @@ cp $MY_PATH/files/.babelrc .
 
 rm -rf resources/assets/sass
 cp -r $MY_PATH/resources/assets ./resources
-
+cp $MY_PATH/files/app.blade.php ./resources/views/
 
 # Load additional composer packages
 sed -i '/dont-discover/a \
@@ -123,7 +123,15 @@ sed -i "0,/'sqlite'/s/sqlite/memory' => \[ \n \
             'driver' => 'sqlite', \n \
             'database' => ':memory:', \n \
         ], \n \
+\n        'dusk' => \[ \n \
+            'driver' => 'sqlite', \n \
+            'database' => database_path('dusk.sqlite'), \n \
+        ], \n \
 \n        '&/" config/database.php
+
+touch database/dusk.sqlite
+cp .env .env.dusk.local
+sed -i "/DB_CONNECTION=mysql/DB_CONNECTION=dusk/" .env.dusk.local
 
 # Use the "memory" database connection in phpunit
 sed -i '/QUEUE_DRIVER/a \
@@ -145,3 +153,11 @@ echo 'Initial project setup' >> CHANGELOG.md
 # Commit all changes to git repo
 git add .
 git commit -m 'apply setup script alterations'
+
+# Do some checks at the very end
+echo 'Please set your application uri in .env and .env.dusk.local'
+echo 'then run the following commands:'
+echo ''
+echo 'npm run dev'
+echo 'phpunit'
+echo 'dusk'
