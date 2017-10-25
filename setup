@@ -86,6 +86,7 @@ cp $MY_PATH/files/.babelrc .
 rm -rf resources/assets/sass
 cp -r $MY_PATH/resources/assets ./resources
 cp $MY_PATH/files/app.blade.php ./resources/views/
+cp $MY_PATH/files/ExampleComponent.vue ./resources/assets/js/components/
 
 # Load additional composer packages
 sed -i '/dont-discover/a \
