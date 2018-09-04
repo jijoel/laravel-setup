@@ -32,12 +32,20 @@ if (process.env.ARG == 'detail') {
 mix.webpackConfig({
     plugins: plugins,
     resolve: { symlinks: false },
-    externals: {
-        'axios': 'axios',
-        'vue': 'Vue',
-        'vuetify': 'Vuetify',
-        'vee-validate': 'VeeValidate',
-    },
+    // externals: {
+    //     'axios': 'axios',
+    //     'vue': 'Vue',
+    //     'vuetify': 'Vuetify',
+    //     'vee-validate': 'VeeValidate',
+    // },
+    // While you are developing/debugging the front-end,
+    // you probably won't want to use externals, because
+    // the Vue debugger won't be available.
+    // To use externals, include these in app.blade.php:
+    //   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    //   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    //   <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.js"></script>
+    //   <script src="https://cdn.jsdelivr.net/npm/vee-validate/dist/vee-validate.min.js"></script>
 })
 mix.options({
     extractVueStyles: true,
