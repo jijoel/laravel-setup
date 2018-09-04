@@ -79,14 +79,13 @@ sed -i '/bootstrap-sass/d' package.json
 sed -i '/jquery/d' package.json
 sed -i '/lodash/d' package.json
 
-yarn add --dev babel-plugin-transform-imports babel-preset-env babel-preset-stage-2 moment stylus stylus-loader vee-validate vuetify vuex webpack-bundle-analyzer
+yarn add --dev babel-plugin-transform-imports babel-preset-env babel-preset-stage-2 date-fns stylus stylus-loader vee-validate vuetify vuex webpack-bundle-analyzer
 cp $MY_PATH/files/webpack.mix.js .
 cp $MY_PATH/files/.babelrc .
 
-rm -rf resources/assets/sass
-cp -r $MY_PATH/resources/assets ./resources
+cp -r $MY_PATH/resources ./resources
 cp $MY_PATH/files/app.blade.php ./resources/views/
-cp $MY_PATH/files/ExampleComponent.vue ./resources/assets/js/components/
+cp $MY_PATH/files/ExampleComponent.vue ./resources/js/components/
 
 # Load additional composer packages
 sed -i '/dont-discover/a \

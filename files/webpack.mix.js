@@ -32,6 +32,12 @@ if (process.env.ARG == 'detail') {
 mix.webpackConfig({
     plugins: plugins,
     resolve: { symlinks: false },
+    externals: {
+        'axios': 'axios',
+        'vue': 'Vue',
+        'vuetify': 'Vuetify',
+        'vee-validate': 'VeeValidate',
+    },
 })
 mix.options({
     extractVueStyles: true,
@@ -55,6 +61,6 @@ if (mix.inProduction()) {
 }
 
 
-mix.js('resources/assets/js/app.js', 'public/js')
-   .stylus('resources/assets/stylus/app.styl', 'public/css');
+mix.js('resources/js/app.js', 'public/js')
+   .stylus('resources/stylus/app.styl', 'public/css');
 
